@@ -1,10 +1,6 @@
 {
 	"name": "DestinationDataset_StorageAccount",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "AzureBlobStorage1",
-			"type": "LinkedServiceReference"
-		},
 		"parameters": {
 			"cw_fileName": {
 				"type": "string"
