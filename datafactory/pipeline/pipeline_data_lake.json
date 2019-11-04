@@ -1,0 +1,919 @@
+{
+	"name": "pipeline_data_lake",
+	"properties": {
+		"activities": [
+			{
+				"name": "ps_copies",
+				"description": "copies postgres tables",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ps_copy",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.tableName}"
+								},
+								{
+									"name": "Destination",
+									"value": "postgresqlcopy//@{pipeline().parameters.cw_items}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "RelationalSource",
+									"query": {
+										"value": "@item().copySource.query",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"maxConcurrentConnections": 5
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"enableSkipIncompatibleRow": true
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_tableName": "@item().source.tableName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_fileName": "@item().destination.fileName"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_alert\""
+						},
+						"destination": {
+							"fileName": "public.alerts_alert.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_alert\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_alertstatus\""
+						},
+						"destination": {
+							"fileName": "public.alerts_alertstatus.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_alertstatus\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_missingdatarule\""
+						},
+						"destination": {
+							"fileName": "public.alerts_missingdatarule.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_missingdatarule\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_missingdatarule_notification_templates\""
+						},
+						"destination": {
+							"fileName": "public.alerts_missingdatarule_notification_templates.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_missingdatarule_notification_templates\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_notificationtemplate\""
+						},
+						"destination": {
+							"fileName": "public.alerts_notificationtemplate.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_notificationtemplate\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_rule\""
+						},
+						"destination": {
+							"fileName": "public.alerts_rule.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_rule\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_rule_end_notification_templates\""
+						},
+						"destination": {
+							"fileName": "public.alerts_rule_end_notification_templates.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_rule_end_notification_templates\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_rule_equipments\""
+						},
+						"destination": {
+							"fileName": "public.alerts_rule_equipments.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_rule_equipments\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"alerts_rule_start_notification_templates\""
+						},
+						"destination": {
+							"fileName": "public.alerts_rule_start_notification_templates.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"alerts_rule_start_notification_templates\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_group\""
+						},
+						"destination": {
+							"fileName": "public.auth_group.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_group\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_group_permissions\""
+						},
+						"destination": {
+							"fileName": "public.auth_group_permissions.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_group_permissions\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_permission\""
+						},
+						"destination": {
+							"fileName": "public.auth_permission.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_permission\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_user\""
+						},
+						"destination": {
+							"fileName": "public.auth_user.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_user\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_user_groups\""
+						},
+						"destination": {
+							"fileName": "public.auth_user_groups.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_user_groups\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"auth_user_user_permissions\""
+						},
+						"destination": {
+							"fileName": "public.auth_user_user_permissions.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"auth_user_user_permissions\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_command\""
+						},
+						"destination": {
+							"fileName": "public.core_command.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_command\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_commandtype\""
+						},
+						"destination": {
+							"fileName": "public.core_commandtype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_commandtype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_data\""
+						},
+						"destination": {
+							"fileName": "public.core_data.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_data\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_device\""
+						},
+						"destination": {
+							"fileName": "public.core_device.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_device\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_device_tags\""
+						},
+						"destination": {
+							"fileName": "public.core_device_tags.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_device_tags\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_entity\""
+						},
+						"destination": {
+							"fileName": "public.core_entity.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_entity\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_entitytype\""
+						},
+						"destination": {
+							"fileName": "public.core_entitytype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_entitytype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_equipment\""
+						},
+						"destination": {
+							"fileName": "public.core_equipment.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_equipment\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_equipment_services\""
+						},
+						"destination": {
+							"fileName": "public.core_equipment_services.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_equipment_services\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_equipmenttemplate\""
+						},
+						"destination": {
+							"fileName": "public.core_equipmenttemplate.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_equipmenttemplate\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_equipmenttemplate_tags\""
+						},
+						"destination": {
+							"fileName": "public.core_equipmenttemplate_tags.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_equipmenttemplate_tags\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_fluidtype\""
+						},
+						"destination": {
+							"fileName": "public.core_fluidtype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_fluidtype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_functionalgroup\""
+						},
+						"destination": {
+							"fileName": "public.core_functionalgroup.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_functionalgroup\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_gateway\""
+						},
+						"destination": {
+							"fileName": "public.core_gateway.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_gateway\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_gatewaytype\""
+						},
+						"destination": {
+							"fileName": "public.core_gatewaytype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_gatewaytype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_lastclockeddata\""
+						},
+						"destination": {
+							"fileName": "public.core_lastclockeddata.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_lastclockeddata\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_lastdata\""
+						},
+						"destination": {
+							"fileName": "public.core_lastdata.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_lastdata\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_location\""
+						},
+						"destination": {
+							"fileName": "public.core_location.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_location\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_oauth2token\""
+						},
+						"destination": {
+							"fileName": "public.core_oauth2token.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_oauth2token\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_service\""
+						},
+						"destination": {
+							"fileName": "public.core_service.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_service\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_tag\""
+						},
+						"destination": {
+							"fileName": "public.core_tag.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_tag\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_transceiver\""
+						},
+						"destination": {
+							"fileName": "public.core_transceiver.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_transceiver\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_transceivertype\""
+						},
+						"destination": {
+							"fileName": "public.core_transceivertype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_transceivertype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_transceivertype_command_types\""
+						},
+						"destination": {
+							"fileName": "public.core_transceivertype_command_types.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_transceivertype_command_types\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_transceivertype_supported_gateways\""
+						},
+						"destination": {
+							"fileName": "public.core_transceivertype_supported_gateways.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_transceivertype_supported_gateways\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_unit\""
+						},
+						"destination": {
+							"fileName": "public.core_unit.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_unit\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_usage\""
+						},
+						"destination": {
+							"fileName": "public.core_usage.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_usage\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"core_usagetype\""
+						},
+						"destination": {
+							"fileName": "public.core_usagetype.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"core_usagetype\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"corsheaders_corsmodel\""
+						},
+						"destination": {
+							"fileName": "public.corsheaders_corsmodel.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"corsheaders_corsmodel\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"data_flow_splitteddata\""
+						},
+						"destination": {
+							"fileName": "public.data_flow_splitteddata.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"data_flow_splitteddata\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_admin_log\""
+						},
+						"destination": {
+							"fileName": "public.django_admin_log.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_admin_log\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_celery_beat_crontabschedule\""
+						},
+						"destination": {
+							"fileName": "public.django_celery_beat_crontabschedule.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_celery_beat_crontabschedule\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_celery_beat_intervalschedule\""
+						},
+						"destination": {
+							"fileName": "public.django_celery_beat_intervalschedule.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_celery_beat_intervalschedule\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_celery_beat_periodictask\""
+						},
+						"destination": {
+							"fileName": "public.django_celery_beat_periodictask.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_celery_beat_periodictask\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_celery_beat_periodictasks\""
+						},
+						"destination": {
+							"fileName": "public.django_celery_beat_periodictasks.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_celery_beat_periodictasks\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_content_type\""
+						},
+						"destination": {
+							"fileName": "public.django_content_type.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_content_type\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_migrations\""
+						},
+						"destination": {
+							"fileName": "public.django_migrations.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_migrations\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"django_session\""
+						},
+						"destination": {
+							"fileName": "public.django_session.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"django_session\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"enryu_splitdata\""
+						},
+						"destination": {
+							"fileName": "public.enryu_splitdata.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"enryu_splitdata\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"kpi_kpi\""
+						},
+						"destination": {
+							"fileName": "public.kpi_kpi.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"kpi_kpi\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"kpi_kpi_services\""
+						},
+						"destination": {
+							"fileName": "public.kpi_kpi_services.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"kpi_kpi_services\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"recorder_record\""
+						},
+						"destination": {
+							"fileName": "public.recorder_record.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"recorder_record\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"social_auth_association\""
+						},
+						"destination": {
+							"fileName": "public.social_auth_association.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"social_auth_association\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"social_auth_code\""
+						},
+						"destination": {
+							"fileName": "public.social_auth_code.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"social_auth_code\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"social_auth_nonce\""
+						},
+						"destination": {
+							"fileName": "public.social_auth_nonce.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"social_auth_nonce\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"social_auth_partial\""
+						},
+						"destination": {
+							"fileName": "public.social_auth_partial.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"social_auth_partial\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"social_auth_usersocialauth\""
+						},
+						"destination": {
+							"fileName": "public.social_auth_usersocialauth.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"social_auth_usersocialauth\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"tenancy_setting\""
+						},
+						"destination": {
+							"fileName": "public.tenancy_setting.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"tenancy_setting\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"tenancy_tenant\""
+						},
+						"destination": {
+							"fileName": "public.tenancy_tenant.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"tenancy_tenant\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_certificate\""
+						},
+						"destination": {
+							"fileName": "public.users_certificate.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_certificate\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_dashboard\""
+						},
+						"destination": {
+							"fileName": "public.users_dashboard.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_dashboard\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_role\""
+						},
+						"destination": {
+							"fileName": "public.users_role.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_role\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_role_entities\""
+						},
+						"destination": {
+							"fileName": "public.users_role_entities.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_role_entities\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_role_permissions\""
+						},
+						"destination": {
+							"fileName": "public.users_role_permissions.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_role_permissions\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_ssoauthprovider\""
+						},
+						"destination": {
+							"fileName": "public.users_ssoauthprovider.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_ssoauthprovider\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_userdashboard\""
+						},
+						"destination": {
+							"fileName": "public.users_userdashboard.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_userdashboard\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_usergroup\""
+						},
+						"destination": {
+							"fileName": "public.users_usergroup.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_usergroup\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_usergroup_roles\""
+						},
+						"destination": {
+							"fileName": "public.users_usergroup_roles.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_usergroup_roles\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_userprofile\""
+						},
+						"destination": {
+							"fileName": "public.users_userprofile.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_userprofile\""
+						}
+					},
+					{
+						"source": {
+							"tableName": "\"public\".\"users_userprofile_groups\""
+						},
+						"destination": {
+							"fileName": "public.users_userprofile_groups.txt"
+						},
+						"copySource": {
+							"query": "select * from \"public\".\"users_userprofile_groups\""
+						}
+					}
+				]
+			}
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

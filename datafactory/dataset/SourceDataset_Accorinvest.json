@@ -1,0 +1,23 @@
+{
+	"name": "SourceDataset_Accorinvest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "PostgreSqlAccorInvest",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"cw_tableName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RelationalTable",
+		"typeProperties": {
+			"tableName": {
+				"value": "@dataset().cw_tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
